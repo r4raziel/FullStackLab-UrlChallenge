@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col m12">
-        <form asp-action="Create">
+        <form asp-action="save"  method="post">
             <div class="card">
                 <div class="card-content">
                     <div class="row">
@@ -21,7 +21,9 @@
                     </div>
                     <div class="row">
                         <div class="col m6 offset-m2">
-                            <input type="text" class="validate form-control" placeholder="Your original URL here"/>
+                            <input asp-for="NewUrl.OriginalUrl" type="text" class="validate form-control" placeholder="Your original URL here" />
+                            <span asp-validation-for="NewUrl.OriginalUrl" style="color:red"></span>
+                           
                         </div>
                         <div class="col m2">
                             <button type="submit" class="btn">Shorten URL</button>
@@ -46,9 +48,14 @@
         @foreach (var url in Model.Urls)
         {
             <tr>
-                <th scope="row"><a href="https://localhost:5001/ABCDE">https://localhost:5001/ABCDE</a></th>
-                <td><a href="https://drive.google.com/file/d/1VdLgSSMojWFb1GRoBAFX_eXy7oX2J">drive.google.com/file/d/1VdLgSS...</a></td>
-                <td><!-- Please match the same format -->Feb 24, 2021</td>
+                <th scope="row">
+                    <a href=@string.Format("/ivalid/{0}", url.ShortUrl)>https://localhost:5001/@url.ShortUrl</a>
+                </th>
+                <td>
+                    <a href=@string.Format("/index/{0}", url.ShortUrl)>@url.OriginalUrl</a>
+                   
+                </td>
+                <td><!-- Please match the same format -->@url.CreatedOn.ToString("MMM dd, yyyy")</td>
                 <td>@url.Count</td>
                 <td>
                     <a href=@string.Format("/urls/{0}", url.ShortUrl)>
@@ -59,5 +66,6 @@
                 </td>
             </tr>
         }
+        <tr><td rowspan="5"> <span asp-validation-for="NewUrl.ShortUrl" style="color:red"></span></td></tr>
     </tbody>
 </table>

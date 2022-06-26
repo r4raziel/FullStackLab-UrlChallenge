@@ -19,12 +19,16 @@ namespace hey_url_challenge_code_dotnet.Migrations
                 {
                     table.PrimaryKey("PK_Urls", x => x.Id);
                 });
+
+            
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Urls");
+
+           
         }
     }
 }

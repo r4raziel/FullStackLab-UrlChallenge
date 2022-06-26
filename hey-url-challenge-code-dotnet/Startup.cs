@@ -1,3 +1,5 @@
+using hey_url_challenge_code_dotnet.Exceptions;
+using hey_url_challenge_code_dotnet.Models;
 using HeyUrlChallengeCodeDotnet.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,9 +22,26 @@ namespace HeyUrlChallengeCodeDotnet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IUrlRepository, UrlRepository>();
+            services.AddTransient<ExceptionHandlerMiddleware>();
             services.AddBrowserDetection();
-            services.AddControllersWithViews();
-            services.AddDbContext<ApplicationContext>(options => options.UseInMemoryDatabase(databaseName: "HeyUrl"));
+            services.AddControllersWithViews()
+                .AddXmlSerializerFormatters()
+                .AddXmlDataContractSerializerFormatters()
+                .AddJsonOptions(
+                    jsonOptions => jsonOptions.JsonSerializerOptions.PropertyNamingPolicy = null
+                ); ;
+            //services.AddDbContext<ApplicationContext>(options => options.UseInMemoryDatabase(databaseName: "HeyUrl"));
+
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(
+               Configuration.GetConnectionString("DbConnection")));
+
+            services.AddMvc(options =>
+            {
+                options.ReturnHttpNotAcceptable = true;
+
+            }).AddXmlSerializerFormatters().AddXmlDataContractSerializerFormatters();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,11 +57,24 @@ namespace HeyUrlChallengeCodeDotnet
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+           app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/NotFound";                    
+                    await next();
+                }
+                else if (context.Response.StatusCode == 500)
+                {
+                    context.Request.Path = "/InternalServer";
+                    await next();
+                }
+            });
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
+            app.UseStaticFiles();           
             app.UseRouting();
-
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
