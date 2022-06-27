@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Diagnostics;
+using hey_url_challenge_code_dotnet.Models;
 
 namespace hey_url_challenge_code_dotnet.Exceptions
 {
@@ -34,31 +35,34 @@ namespace hey_url_challenge_code_dotnet.Exceptions
             }
             catch (DomaininternalServerException e)
             {
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-               
+                context.Response.ContentType = "text/html";
+                var err = $"<h1>500 - Page Internal Server Error</h1>" +
+                            "<p> Oops, Unable to process your request." + e.Message + "</p>";
+                await context.Response.WriteAsync(err).ConfigureAwait(false);
+
             }
             catch (DomainBadRequestException e)
             {
-                //context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-                //JsonResult result = new JsonResult(new ResponseData<Book>()
-                //{
+                JsonResult result = new JsonResult(new ResponseData<Url>()
+                {
 
-                //    Code = EResponse.BadRequest.ToString(),
-                //    Status = StatusCodes.Status400BadRequest,
-                //    Data = Array.Empty<Book>(),
-                //    Message = e.Message
-                //})
-                //{
-                //    StatusCode = StatusCodes.Status400BadRequest
+                    Code = EResponse.BadRequest.ToString(),
+                    Status = StatusCodes.Status400BadRequest,
+                    Data = Array.Empty<Url>(),
+                    Message = e.Message
+                })
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
 
-                //};
-                //var routeData = context.GetRouteData();
-                //ActionDescriptor actionDescriptor = new ActionDescriptor();
-                //ActionContext actionContext = new ActionContext(context, routeData, actionDescriptor);
-                //await result.ExecuteResultAsync(actionContext);
+                };
+                var routeData = context.GetRouteData();
+                ActionDescriptor actionDescriptor = new ActionDescriptor();
+                ActionContext actionContext = new ActionContext(context, routeData, actionDescriptor);
+                await result.ExecuteResultAsync(actionContext);
             }
-    }
+        }
 
 }
 }

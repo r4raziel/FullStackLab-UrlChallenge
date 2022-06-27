@@ -81,7 +81,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
         }
 
-        private HomeViewModel GetAllUrls()
+        public HomeViewModel GetAllUrls()
         {
             List<Url> urls = _repository.Urls.OrderBy(x=>x.CreatedOn).ToList();
 
@@ -92,37 +92,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
             return model;
 
-        }
-
-
-        private HomeViewModel GenerateDummyurls()
-        {
-            var model = new HomeViewModel();
-            model.Urls = new List<Url>
-                {
-                    new()
-                    {
-                        ShortUrl = "http://localhost:5000/ABCDE",
-                        OriginalUrl="https://drive.google.com/file/d/1VdLgSSMojWFb1GRoBAFX_eXy7oX2J",
-                        Count = getrandom.Next(1, 10)
-                    },
-                    new()
-                    {
-                        ShortUrl = "http://localhost:5000/ABCDE",
-                        OriginalUrl="https://drive.google.com/file/d/1VdLgSSMojWFb1GRoBAFX_eXy7oX2J",
-                        Count = getrandom.Next(1, 10)
-                    },
-                    new()
-                    {
-                        ShortUrl = "http://localhost:5000/ABCDE",
-                        OriginalUrl="https://drive.google.com/file/d/1VdLgSSMojWFb1GRoBAFX_eXy7oX2J",
-                        Count = getrandom.Next(1, 10)
-                    },
-                };
-            model.NewUrl = new();
-
-            return model;
-        }
+        }        
 
         [Route("/")]
         [Route("/index")]
@@ -142,8 +112,8 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
                 var click = new Clicks {
                     Id = Guid.NewGuid(),
                     UrlId = record.Id,
-                    Platform = this.browserDetector.Browser.OS,
-                    Browser = this.browserDetector.Browser.Name,
+                    Platform = this.browserDetector.Browser != null ? this.browserDetector.Browser.OS: "Windows",
+                    Browser = this.browserDetector.Browser != null ? this.browserDetector.Browser.Name : "NUnit",
                     CreatedOn = DateTime.Now
                 };
                 _repository.Add(click);
@@ -183,7 +153,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
         [HttpGet("/api/GetLast10Urls")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAllData()
+        public async Task<JsonResult> GetAllData()
         {
             var urls = await _repository.Urls.OrderBy(x=>x.CreatedOn).ToListAsync();
             List<ApiResponseModel> apiResponseList = new List<ApiResponseModel>();
@@ -251,40 +221,6 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
         {
             return View();
         }
-
-        [Route("urls/ShowDetails/{url}")]
-        public IActionResult ShowDetails(string url) => View(new ShowViewModel
-        {
-            Url = new Url {ShortUrl = url, Count = getrandom.Next(1, 10)},
-            DailyClicks = new Dictionary<string, int>
-            {
-                {"1", 21},
-                {"2", 2},
-                {"3", 1},
-                {"4", 7},
-                {"5", 20},
-                {"6", 18},
-                {"7", 10},
-                {"8", 20},
-                {"9", 15},
-                {"10", 5},
-                {"11", 15},
-                {"12", 24}
-            },
-            BrowseClicks = new Dictionary<string, int>
-            {
-                { "IE", 13 },
-                { "Firefox", 22 },
-                { "Chrome", 17 },
-                { "Safari", 7 },
-            },
-            PlatformClicks = new Dictionary<string, int>
-            {
-                { "Windows", 13 },
-                { "macOS", 22 },
-                { "Ubuntu", 17 },
-                { "Other", 7 },
-            }
-        });
+       
     }
 }
