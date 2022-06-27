@@ -6,8 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Error\**" />
+    <Content Remove="Views\Error\**" />
+    <EmbeddedResource Remove="Views\Error\**" />
+    <None Remove="Views\Error\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ViewModels\" />
-    <Folder Include="Views\Error\" />
     <Folder Include="wwwroot\lib\materialize" />
   </ItemGroup>
 

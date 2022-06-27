@@ -24,16 +24,19 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
     public class UrlsController : Controller
     {
-        private readonly ILogger<UrlsController> _logger;
+       
         private static readonly Random getrandom = new Random();
         private readonly IBrowserDetector browserDetector;
-        private readonly IUrlRepository _repository;
+        private IUrlRepository _repository;
 
+        public void TestRepositorySet(IUrlRepository repository)
+        {
+            _repository = repository;
+        }
 
-        public UrlsController(ILogger<UrlsController> logger, IBrowserDetector browserDetector, IUrlRepository repository)
+        public UrlsController(IBrowserDetector browserDetector, IUrlRepository repository)
         {
             this.browserDetector = browserDetector;
-            _logger = logger;
             _repository = repository;
         }
 
@@ -80,7 +83,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
         private HomeViewModel GetAllUrls()
         {
-            List<Url> urls = _repository.Urls.ToList();
+            List<Url> urls = _repository.Urls.OrderBy(x=>x.CreatedOn).ToList();
 
             HomeViewModel model = new HomeViewModel {
                 Urls = urls,
@@ -182,7 +185,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetAllData()
         {
-            var urls = await _repository.Urls.ToListAsync();
+            var urls = await _repository.Urls.OrderBy(x=>x.CreatedOn).ToListAsync();
             List<ApiResponseModel> apiResponseList = new List<ApiResponseModel>();
             foreach (var m in urls)
             {
