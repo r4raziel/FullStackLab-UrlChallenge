@@ -21,12 +21,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace HeyUrlChallengeCodeDotnet.Controllers
 {
-
+  
     public class UrlsController : Controller
     {
-       
-        private static readonly Random getrandom = new Random();
-        private readonly IBrowserDetector browserDetector;
+        private readonly IBrowserDetector _browserDetector;
         private IUrlRepository _repository;
 
         public void TestRepositorySet(IUrlRepository repository)
@@ -36,10 +34,10 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
         public UrlsController(IBrowserDetector browserDetector, IUrlRepository repository)
         {
-            this.browserDetector = browserDetector;
+            this._browserDetector = browserDetector;
             _repository = repository;
         }
-
+      
         [Route("save")]
         [HttpPost]
         public IActionResult Save(HomeViewModel model)
@@ -68,7 +66,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
                 }
                 catch (Exception ex)
                 {
-                    throw new DomaininternalServerException("Internal Server Error 500.Please contact administrator." + ex.Message);
+                    throw new DomainInternalServerException("Internal Server Error 500.Please contact administrator." + ex.Message);
                 }
 
                 ModelState.Clear();
@@ -80,7 +78,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
             }
 
         }
-
+        [ApiExplorerSettings(IgnoreApi = true)]
         public HomeViewModel GetAllUrls()
         {
             List<Url> urls = _repository.Urls.OrderBy(x=>x.CreatedOn).ToList();
@@ -92,16 +90,19 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
             return model;
 
-        }        
+        }
 
-        [Route("/")]
-        [Route("/index")]
+        [Route("")]
+        [Route("Home")]
+        [Route("Home/Index")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index()
         {
             return View(GetAllUrls());
         }
 
-        [Route("/index/{url}")]
+        [Route("Index/{url}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Visit(string url)
         {
 
@@ -112,8 +113,8 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
                 var click = new Clicks {
                     Id = Guid.NewGuid(),
                     UrlId = record.Id,
-                    Platform = this.browserDetector.Browser != null ? this.browserDetector.Browser.OS: "Windows",
-                    Browser = this.browserDetector.Browser != null ? this.browserDetector.Browser.Name : "NUnit",
+                    Platform = this._browserDetector.Browser != null ? this._browserDetector.Browser.OS: "Windows",
+                    Browser = this._browserDetector.Browser != null ? this._browserDetector.Browser.Name : "NUnit",
                     CreatedOn = DateTime.Now
                 };
                 _repository.Add(click);
@@ -126,6 +127,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
 
             return View("Index", GetAllUrls());
         }
+        [ApiExplorerSettings(IgnoreApi = true)]
         [Route("urls/{url}")]
         public IActionResult Show(string url)
         {
@@ -151,7 +153,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
         }
 
 
-        [HttpGet("/api/GetLast10Urls")]
+        [HttpGet("/api/getalldata")]
         [Produces("application/json")]
         public async Task<JsonResult> GetAllData()
         {
@@ -209,13 +211,14 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
                 StatusCode = StatusCodes.Status200OK
             };
         }
-
+        [ApiExplorerSettings(IgnoreApi = true)]
         [Route("/NotFound")]
         public IActionResult PageNotFound()
         {
             return View();
         }
-
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]
         [Route("/InternalServer")]
         public IActionResult InternalServer()
         {

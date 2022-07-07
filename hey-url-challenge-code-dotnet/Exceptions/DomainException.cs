@@ -19,9 +19,9 @@ namespace hey_url_challenge_code_dotnet.Exceptions
         {
         }
     }
-    public class DomaininternalServerException : DomainException
+    public class DomainInternalServerException : DomainException
     {
-        public DomaininternalServerException(string message) : base(message)
+        public DomainInternalServerException(string message) : base(message)
         {
         }
 

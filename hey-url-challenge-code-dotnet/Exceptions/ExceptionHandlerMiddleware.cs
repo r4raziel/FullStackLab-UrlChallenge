@@ -33,7 +33,7 @@ namespace hey_url_challenge_code_dotnet.Exceptions
                             "<p> Oops, better check that URL."+e.Message+"</p>";
                 await context.Response.WriteAsync(err).ConfigureAwait(false);
             }
-            catch (DomaininternalServerException e)
+            catch (DomainInternalServerException e)
             {
                 context.Response.ContentType = "text/html";
                 var err = $"<h1>500 - Page Internal Server Error</h1>" +

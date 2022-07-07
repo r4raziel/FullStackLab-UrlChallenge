@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace HeyUrlChallengeCodeDotnet
 {
@@ -39,8 +40,13 @@ namespace HeyUrlChallengeCodeDotnet
             services.AddMvc(options =>
             {
                 options.ReturnHttpNotAcceptable = true;
+                options.EnableEndpointRouting = false;
 
             }).AddXmlSerializerFormatters().AddXmlDataContractSerializerFormatters();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiDemo", Version = "v1" });
+            });
 
         }
 
@@ -50,6 +56,8 @@ namespace HeyUrlChallengeCodeDotnet
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApiDemo v1"));
             }
             else
             {
@@ -76,13 +84,21 @@ namespace HeyUrlChallengeCodeDotnet
             app.UseRouting();
             app.UseMiddleware<ExceptionHandlerMiddleware>();
             app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
+            // app.UseMvc();
+           // app.UseMvcWithDefaultRoute();
+            app.UseMvc(routes =>
             {
-                endpoints.MapControllerRoute(
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
+            /*app.UseEndpoints(endpoints =>
+            {
+               endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+
+               endpoints.MapControllers();
+               endpoints.MapRazorPages();
+            });*/
 
             using var scope = app.ApplicationServices.CreateScope();
             var context = scope.ServiceProvider.GetService<ApplicationContext>();
