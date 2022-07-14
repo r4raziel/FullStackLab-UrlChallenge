@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HeyUrlChallengeCodeDotnet
 {
@@ -43,10 +44,17 @@ namespace HeyUrlChallengeCodeDotnet
                 options.EnableEndpointRouting = false;
 
             }).AddXmlSerializerFormatters().AddXmlDataContractSerializerFormatters();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(AddSwaggerGenOption);
+            /*  services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiDemo", Version = "v1" });
-            });
+            });*/
+
+        }
+
+        public void AddSwaggerGenOption(SwaggerGenOptions c)
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiDemo", Version = "v1" });
 
         }
 

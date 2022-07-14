@@ -153,7 +153,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
         }
 
 
-        [HttpGet("/api/getalldata")]
+        [HttpGet("/api/GetAllData")]
         [Produces("application/json")]
         public async Task<JsonResult> GetAllData()
         {
@@ -190,7 +190,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
                         var attribute = new ClicksApiAttributesModel
                         {
                             Id = c.Id,
-                            Type = "cliks",
+                            Type = "clicks",
                             Attributes = new ClicksAttributes { Browser = c.Browser, Platform = c.Platform }
                         };
 
