@@ -1,12 +1,15 @@
+using System.Text;
 using hey_url_challenge_code_dotnet.Exceptions;
 using hey_url_challenge_code_dotnet.Models;
 using HeyUrlChallengeCodeDotnet.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -24,6 +27,35 @@ namespace HeyUrlChallengeCodeDotnet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "https://localhost:5001",
+                    ValidAudience = "https://localhost:5001",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
+                };
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("EnableCORS", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                });
+
+            });
             services.AddTransient<IUrlRepository, UrlRepository>();
             services.AddTransient<ExceptionHandlerMiddleware>();
             services.AddBrowserDetection();
@@ -45,10 +77,7 @@ namespace HeyUrlChallengeCodeDotnet
 
             }).AddXmlSerializerFormatters().AddXmlDataContractSerializerFormatters();
             services.AddSwaggerGen(AddSwaggerGenOption);
-            /*  services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiDemo", Version = "v1" });
-            });*/
+          
 
         }
 
@@ -88,9 +117,11 @@ namespace HeyUrlChallengeCodeDotnet
                 }
             });
             app.UseHttpsRedirection();
+            app.UseCors("EnableCORS");
             app.UseStaticFiles();           
             app.UseRouting();
             app.UseMiddleware<ExceptionHandlerMiddleware>();
+            app.UseAuthentication();
             app.UseAuthorization();
             // app.UseMvc();
            // app.UseMvcWithDefaultRoute();

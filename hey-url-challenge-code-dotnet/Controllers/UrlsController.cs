@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Shyjus.BrowserDetection;
 using System.Linq;
 using System.Text.Json;
-using Newtonsoft.Json;
+
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using hey_url_challenge_code_dotnet.Exceptions;
 using hey_url_challenge_code_dotnet.JsonNamingPolicy;
@@ -152,7 +152,7 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
             }
         }
 
-
+      
         [HttpGet("/api/GetAllData")]
         [Produces("application/json")]
         public async Task<JsonResult> GetAllData()
