@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace hey_url_challenge_code_dotnet.Models
         Dictionary<string, int> GetClicksDataByPlatform(Url url);
 
         void Add<EntityType>(EntityType entity);
+
+        Task<StatusCodeResult> Update(Clicks model);
 
         void SaveChanges();
 

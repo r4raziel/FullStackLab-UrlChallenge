@@ -56,8 +56,8 @@ namespace HeyUrlChallengeCodeDotnet
                 });
 
             });
-            services.AddTransient<IUrlRepository, UrlRepository>();
-            services.AddTransient<ExceptionHandlerMiddleware>();
+            services.AddScoped<IUrlRepository, UrlRepository>();
+            services.AddScoped<ExceptionHandlerMiddleware>();
             services.AddBrowserDetection();
             services.AddControllersWithViews()
                 .AddXmlSerializerFormatters()

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace hey_url_challenge_code_dotnet.Models
 {
@@ -24,10 +26,41 @@ namespace hey_url_challenge_code_dotnet.Models
         {
             _db.Add(entity);
         }
+        public async Task<StatusCodeResult> Update(Clicks model)
+        {
+
+            try
+            {
+                var saveModel = _db.Urls.FirstOrDefault(a => a.ShortUrl == model.Platform);
+
+                //Url saveModel = new Url
+                //{
+
+                //    Count = 12,
+                //    OriginalUrl = "originalUrl",
+                //    ShortUrl = "shortUrl",
+                //    CreatedOn = DateTime.Now
+                //};
+                saveModel.OriginalUrl = "http://www.jupiter.com";
+                saveModel.Count = 50;
+                // _db.Update(saveModel);
+               
+               _db.SaveChanges();
+              return new StatusCodeResult(200);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+
+                throw;
+            }
+           
+        }
+
 
         public void SaveChanges()
         {
             _db.SaveChanges();
+
         }
 
         public bool CheckUrlExists(Url model)

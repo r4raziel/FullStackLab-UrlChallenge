@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HeyUrlChallengeCodeDotnet.Controllers
 {
-  
+   
     public class UrlsController : Controller
     {
         private readonly IBrowserDetector _browserDetector;
@@ -211,6 +211,25 @@ namespace HeyUrlChallengeCodeDotnet.Controllers
                 StatusCode = StatusCodes.Status200OK
             };
         }
+
+        [HttpPost]
+        [Route("/api/")]
+        public IActionResult UpdateUrl([FromBody] Clicks model)
+        {
+            try
+            {
+                _repository.Update(model);
+                return Ok("succcess");
+            }
+            catch (Exception ex)
+            {
+
+                throw new DomainInternalServerException(ex.Message);
+            }
+            
+        
+        }
+
         [ApiExplorerSettings(IgnoreApi = true)]
         [Route("/NotFound")]
         public IActionResult PageNotFound()
